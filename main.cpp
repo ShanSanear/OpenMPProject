@@ -16,7 +16,7 @@ void single_threaded_loop(bool should_sum_all) {
     for (int j = 0; j < n; j++) {
         if (!first_loop) {
             first_loop = true;
-            //printf("This is first run in this loop. Thread: %d Loop counter: %d\n", omp_get_thread_num(), j);
+            //printf("This is first run in this loop. Loop counter: %d\n", omp_get_thread_num(), j);
         }
         a[j] = 2 * j;
         b[j] = b[j] * 2;
