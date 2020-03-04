@@ -1,12 +1,14 @@
 #include <omp.h>
 #include <cstdio>
+#include <fstream>
+#include <iostream>
 
 using namespace std;
 static double a[10000000];
 static double b[10000000];
 
 void single_threaded_loop(bool should_sum_all) {
-    printf("Running single threaded for loop");
+    printf("Running single threaded for loop\n");
     long n = 10000000;
     long double array_sum = 0;
     bool first_loop = false;
@@ -22,9 +24,14 @@ void single_threaded_loop(bool should_sum_all) {
             array_sum += b[j] + a[j];
         }
     }
+    for (int i = 0; i < 32; i++) {
+        printf("ordered_pragma index %d from thread %d\n", i, 0);
+    }
     double elapsed_time = omp_get_wtime() - start_time;
-    printf("Output value of the array is: %Le\n", array_sum);
-    printf("Elapsed time: %f\n", elapsed_time);
+    if (should_sum_all) {
+        printf("Output value of the array is: %Le\n", array_sum);
+    }
+    printf("Elapsed time: %f\n\n", elapsed_time);
 }
 
 void for_loop_example(int num_of_threads, bool should_sum_all) {
@@ -50,11 +57,15 @@ void for_loop_example(int num_of_threads, bool should_sum_all) {
         }
 
     }
+#pragma omp parallel for ordered default(none)
+    for (int i = 0; i < 32; i++) {
+        printf("ordered_pragma index %d from thread %d\n", i, omp_get_thread_num());
+    }
     double elapsed_time = omp_get_wtime() - start_time;
     if (should_sum_all) {
         printf("Output value of the array is: %Le\n", array_sum);
     }
-    printf("Elapsed time: %f\n", elapsed_time);
+    printf("Elapsed time: %f\n\n", elapsed_time);
 }
 
 void run_example_functions(bool should_sum_all) {
@@ -62,10 +73,6 @@ void run_example_functions(bool should_sum_all) {
     for_loop_example(2, should_sum_all);
     for_loop_example(4, should_sum_all);
     for_loop_example(8, should_sum_all);
-    for_loop_example(10, should_sum_all);
-    for_loop_example(20, should_sum_all);
-    for_loop_example(40, should_sum_all);
-    for_loop_example(80, should_sum_all);
 }
 
 int main() {
